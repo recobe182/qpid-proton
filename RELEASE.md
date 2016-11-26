@@ -31,7 +31,7 @@
 10. Send email, provide links to dist dev repo and the staging repo.
 
 
-### After a vote succeeds: T
+### After a vote succeeds:
 
 1. Bump the master/branch version to next 0.x.y-SNAPSHOT if it wasnt already.
 2. Tag the RC with the final name/version.
