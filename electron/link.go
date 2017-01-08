@@ -80,6 +80,9 @@ func Capacity(n int) LinkOption { return func(l *linkSettings) { l.capacity = n 
 // Prefetch returns a LinkOption that sets a receivers pre-fetch flag. Not relevant for a sender.
 func Prefetch(p bool) LinkOption { return func(l *linkSettings) { l.prefetch = p } }
 
+// Filter returns a LinkOption that sets a filter.
+func Filter(m map[string]string) LinkOption { return func(l *linkSettings) { l.filter = m } }
+
 // AtMostOnce returns a LinkOption that sets "fire and forget" mode, messages
 // are sent but no acknowledgment is received, messages can be lost if there is
 // a network failure. Sets SndSettleMode=SendSettled and RcvSettleMode=RcvFirst
@@ -130,6 +133,7 @@ type linkSettings struct {
 	rcvSettle RcvSettleMode
 	capacity  int
 	prefetch  bool
+	filter	map[string]string
 	session   *session
 	pLink     proton.Link
 }
@@ -175,6 +179,7 @@ func makeLocalLink(sn *session, isSender bool, setting ...LinkOption) (linkSetti
 		return l, fmt.Errorf("cannot create link %s", l.pLink)
 	}
 	l.pLink.Source().SetAddress(l.source)
+	l.pLink.Source().SetFilter(l.filter)
 	l.pLink.Target().SetAddress(l.target)
 	l.pLink.SetSndSettleMode(proton.SndSettleMode(l.sndSettle))
 	l.pLink.SetRcvSettleMode(proton.RcvSettleMode(l.rcvSettle))

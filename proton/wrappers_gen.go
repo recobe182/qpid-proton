@@ -611,6 +611,25 @@ func (t Terminus) SetAddress(address string) int {
 
 	return int(C.pn_terminus_set_address(t.pn, addressC))
 }
+func (t Terminus) SetFilter(filter map[string]string) bool {
+	d := Data{C.pn_terminus_filter(t.pn)}
+	for k, v := range filter {
+		fk := C.CString(k)
+		fv := C.CString(v)
+
+		C.pn_data_put_map(d.pn)
+		C.pn_data_enter(d.pn)
+		C.pn_data_put_symbol(d.pn, C.pn_bytes(C.size_t(len(k)), fk))
+		C.pn_data_put_described(d.pn)
+		C.pn_data_enter(d.pn)
+		C.pn_data_put_symbol(d.pn, C.pn_bytes(C.size_t(len(k)), fk))
+		C.pn_data_put_string(d.pn, C.pn_bytes(C.size_t(len(v)), fv))
+
+		C.free(unsafe.Pointer(fk))
+		C.free(unsafe.Pointer(fv))
+	}
+	return bool(C.pn_data_exit(d.pn));
+}
 func (t Terminus) SetDistributionMode(mode DistributionMode) int {
 	return int(C.pn_terminus_set_distribution_mode(t.pn, C.pn_distribution_mode_t(mode)))
 }
